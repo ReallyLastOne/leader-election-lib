@@ -1,0 +1,50 @@
+plugins {
+    id 'java-library'
+    alias(libs.plugins.java)
+    id 'maven-publish'
+}
+
+group = 'org.reallylastone'
+version = file('version.txt').text.trim()
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+    withSourcesJar()
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    api libs.slf4j.api
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
+    testImplementation libs.junit.jupiter
+    testImplementation libs.mockito.junit.jupiter
+    testCompileOnly libs.lombok
+    testAnnotationProcessor libs.lombok
+    testRuntimeOnly libs.junit.platform.launcher
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.withType(GenerateModuleMetadata).configureEach {
+    enabled = false
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
